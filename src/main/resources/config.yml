@@ -1,0 +1,199 @@
+# OreGen4 Configuration File
+
+# Generation Settings
+generation:
+  enabled: true # Bật chế độ sinh quặng
+  
+  # Generator Types
+  types:
+    # Lava + Water generation (mặc định true)
+    lava_water:
+      enabled: false
+    
+    # Fence + Water generation (mặc định true)
+    fence_water:
+      enabled: true
+      # Các tùy chọn kiểm tra mở rộng (đã bỏ trong v4.1)
+      extended_check: false
+      extended_range: 1
+      chunk_check: false
+    
+    # Các tùy chọn khác mặc định false
+    cobblestone_gen:
+      enabled: false
+    stone_gen:
+      enabled: false
+
+# Hook Settings
+hooks:
+  # ExtraStorage Hook
+  extra_storage:
+    enabled: true
+  # Các tùy chọn khác cho ExtraStorage có thể thêm ở đây
+
+    # AdvancedEnchantment Hook  
+  advanced_enchantment:
+    enabled: true
+  # Các tùy chọn khác cho AdvancedEnchantment có thể thêm ở đây
+
+    # Cấu hình cho từng level
+  levels:
+    # Cấp 1 : giá 80k
+    cap1:
+      permission: oregen.cap1
+      ores:
+        STONE: 25
+        COBBLESTONE: 15
+        COAL_ORE: 25
+        COAL_BLOCK: 5
+        REDSTONE_ORE: 7
+        REDSTONE_BLOCK: 3
+        LAPIS_ORE: 7
+        LAPIS_BLOCK: 3
+        IRON_ORE: 5
+        IRON_BLOCK: 3
+        GOLD_ORE: 2
+    
+    # Cấp 2 : 250k
+    cap2:
+      permission: oregen.cap2
+      ores:
+        STONE: 20
+        COBBLESTONE: 10
+        COAL_ORE: 5
+        COAL_BLOCK: 10
+        REDSTONE_ORE: 5
+        REDSTONE_BLOCK: 10
+        LAPIS_ORE: 5
+        LAPIS_BLOCK: 10
+        IRON_ORE: 7
+        IRON_BLOCK: 5
+        GOLD_ORE: 2
+        GOLD_BLOCK: 3
+        DIAMOND_ORE: 3
+        DIAMOND_BLOCK: 5
+        
+    # Cấp 3 : 1m
+    cap3:
+      permission: oregen.cap3
+      ores:
+        STONE: 10
+        COBBLESTONE: 5
+        COAL_ORE: 3
+        COAL_BLOCK: 7
+        REDSTONE_ORE: 4
+        REDSTONE_BLOCK: 7
+        LAPIS_ORE: 4
+        LAPIS_BLOCK: 7
+        IRON_ORE: 10
+        IRON_BLOCK: 5
+        GOLD_ORE: 5
+        GOLD_BLOCK: 10
+        DIAMOND_ORE: 5
+        DIAMOND_BLOCK: 10
+        EMERALD_ORE: 5
+        EMERALD_BLOCK: 3
+        
+    # Cấp 4 : 2m5
+    cap4:
+      permission: oregen.cap4
+      ores:
+        STONE: 5
+        COBBLESTONE: 2
+        COAL_ORE: 3
+        COAL_BLOCK: 5
+        REDSTONE_ORE: 3
+        REDSTONE_BLOCK: 5
+        LAPIS_ORE: 3
+        LAPIS_BLOCK: 5
+        IRON_ORE: 10
+        IRON_BLOCK: 10
+        GOLD_ORE: 5
+        GOLD_BLOCK: 10
+        DIAMOND_ORE: 7
+        DIAMOND_BLOCK: 10
+        EMERALD_ORE: 7
+        EMERALD_BLOCK: 10
+        
+    # Cấp 5 : 2m5
+    cap5:
+      permission: oregen.cap5
+      ores:
+        STONE: 3
+        COBBLESTONE: 1
+        COAL_ORE: 3
+        COAL_BLOCK: 5
+        REDSTONE_ORE: 3
+        REDSTONE_BLOCK: 5
+        LAPIS_ORE: 3
+        LAPIS_BLOCK: 5
+        IRON_ORE: 10
+        IRON_BLOCK: 10
+        GOLD_ORE: 5
+        GOLD_BLOCK: 10
+        DIAMOND_ORE: 10
+        DIAMOND_BLOCK: 10
+        EMERALD_ORE: 7
+        EMERALD_BLOCK: 10
+        
+    # Cấp 6 : 10m
+    cap6:
+      permission: oregen.cap6
+      ores:
+        STONE: 1
+        COBBLESTONE: 1
+        COAL_ORE: 3
+        COAL_BLOCK: 5
+        REDSTONE_ORE: 3
+        REDSTONE_BLOCK: 5
+        LAPIS_ORE: 3
+        LAPIS_BLOCK: 5
+        IRON_ORE: 5
+        IRON_BLOCK: 10
+        GOLD_ORE: 5
+        GOLD_BLOCK: 10
+        DIAMOND_ORE: 10
+        DIAMOND_BLOCK: 10
+        EMERALD_ORE: 10
+        EMERALD_BLOCK: 14
+        
+    # Cấp 7 : 100xu hoặc 5000 xu khóa
+    cap7:
+      permission: oregen.cap7
+      ores:
+        STONE: 1
+        COBBLESTONE: 1
+        COAL_ORE: 3
+        COAL_BLOCK: 5
+        REDSTONE_ORE: 3
+        REDSTONE_BLOCK: 5
+        LAPIS_ORE: 3
+        LAPIS_BLOCK: 5
+        IRON_ORE: 3
+        IRON_BLOCK: 5
+        GOLD_ORE: 3
+        GOLD_BLOCK: 5
+        DIAMOND_ORE: 15
+        DIAMOND_BLOCK: 15
+        EMERALD_ORE: 14
+        EMERALD_BLOCK: 14
+
+  # Cấu hình cho người chơi không có permission (Bình thường)
+  default:
+    permission: oregen.default
+    ores:
+      STONE: 40
+      COBBLESTONE: 25
+      COAL_ORE: 15
+      REDSTONE_ORE: 7
+      LAPIS_ORE: 10
+      IRON_ORE: 3
+
+# Messages
+messages:
+  prefix: '&8[&bOreGen4&8] &7'
+  reload: '&aConfiguration reloaded successfully!'
+  no-permission: '&cYou do not have permission to use this command!'
+
+# Debug mode (set to true for additional console output)
+debug: false

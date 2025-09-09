@@ -1,0 +1,31 @@
+name: OreGen4
+version: '${project.version}'
+main: me.sfclog.oregen4.Main
+api-version: 1.17
+author: SFC_Log
+depend:
+  - LuckPerms
+softdepend: [BentoBox, SuperiorSkyblock2, ExtraStorage, AdvancedEnchantments]
+
+commands:
+  oregen:
+    description: Main command for OreGen4 plugin
+    usage: /oregen reload
+    permission: oregen.admin
+  upgradeore:
+    description: Upgrade a player's ore generation level
+    usage: /upgradeore <player> <level>
+    permission: oregen.admin
+  permission:
+    description: Manage permission updater system
+    usage: /permission <status|update|reload>
+    permission: oregen.admin
+  orestats:
+    description: Show OreGen4 performance statistics
+    usage: /orestats
+    permission: oregen.admin
+
+permissions:
+  oregen.admin:
+    description: Allows access to admin commands
+    default: op
