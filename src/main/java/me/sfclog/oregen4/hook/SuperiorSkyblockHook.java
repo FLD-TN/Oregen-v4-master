@@ -1,15 +1,17 @@
 package me.sfclog.oregen4.hook;
 
-import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
-import com.bgsoftware.superiorskyblock.api.island.Island;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import me.sfclog.oregen4.Main;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+
+import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
+import com.bgsoftware.superiorskyblock.api.island.Island;
+
+import me.sfclog.oregen4.Main;
 
 public class SuperiorSkyblockHook {
     // Lưu trữ thời gian tính toán cuối cùng cho mỗi đảo để giảm số lần gọi
@@ -29,7 +31,22 @@ public class SuperiorSkyblockHook {
         Island is = SuperiorSkyblockAPI.getGrid().getIslandAt(location);
         if (is != null) {
             // Sử dụng UUID của đảo làm ID
-            return is.getUniqueId().toString();
+            String islandId = is.getUniqueId().toString();
+            
+            // Debug log
+            if (Main.isDebugEnabled()) {
+                Main.sendlog("§e[OreGen4] §bSuperiorSkyblock: Đã tìm thấy đảo với ID §a" + islandId + 
+                         "§b tại vị trí §a" + location.getWorld().getName() + " - " + 
+                         location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
+            }
+            
+            return islandId;
+        }
+        
+        if (Main.isDebugEnabled()) {
+            Main.sendlog("§c[OreGen4] SuperiorSkyblock: Không tìm thấy đảo tại vị trí " + 
+                      location.getWorld().getName() + " - " + 
+                      location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
         }
         return null;
     }

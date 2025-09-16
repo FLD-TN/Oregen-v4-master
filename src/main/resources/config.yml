@@ -142,20 +142,20 @@ hooks:
       ores:
         STONE: 1
         COBBLESTONE: 1
-        COAL_ORE: 3
-        COAL_BLOCK: 5
-        REDSTONE_ORE: 3
-        REDSTONE_BLOCK: 5
-        LAPIS_ORE: 3
-        LAPIS_BLOCK: 5
-        IRON_ORE: 5
-        IRON_BLOCK: 10
-        GOLD_ORE: 5
-        GOLD_BLOCK: 10
-        DIAMOND_ORE: 10
-        DIAMOND_BLOCK: 10
-        EMERALD_ORE: 10
-        EMERALD_BLOCK: 14
+        COAL_ORE: 1
+        COAL_BLOCK: 1
+        REDSTONE_ORE: 1
+        REDSTONE_BLOCK: 1
+        LAPIS_ORE: 1
+        LAPIS_BLOCK: 1
+        IRON_ORE: 1
+        IRON_BLOCK: 1
+        GOLD_ORE: 1
+        GOLD_BLOCK: 1
+        DIAMOND_ORE: 1
+        DIAMOND_BLOCK: 1
+        EMERALD_ORE: 1
+        EMERALD_BLOCK: 85
         
     # Cấp 7 : 100xu hoặc 5000 xu khóa
     cap7:
@@ -195,5 +195,8 @@ messages:
   reload: '&aConfiguration reloaded successfully!'
   no-permission: '&cYou do not have permission to use this command!'
 
-# Debug mode (set to true for additional console output)
-debug: false
+# Debug mode
+# CẢNH BÁO: Bật chế độ debug sẽ tạo ra rất nhiều log trên console khi server hoạt động
+# Chỉ nên bật khi gặp lỗi cần debug, và tắt ngay sau đó để tránh làm chậm server
+# Đặt "true" để bật chế độ debug, "false" để tắt
+debug: true

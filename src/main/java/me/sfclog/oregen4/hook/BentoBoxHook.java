@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 
+import me.sfclog.oregen4.Main;
 import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.database.objects.Island;
 import world.bentobox.bentobox.managers.IslandsManager;
@@ -32,7 +33,22 @@ public class BentoBoxHook {
         final Optional<Island> island = manager.getIslandAt(loc);
         if (island.isPresent()) {
             // Sử dụng uniqueId của đảo làm ID
-            return island.get().getUniqueId();
+            String islandId = island.get().getUniqueId();
+            
+            // Debug log
+            if (Main.isDebugEnabled()) {
+                Main.sendlog("§e[OreGen4] §bBentoBox: Đã tìm thấy đảo với ID §a" + islandId + 
+                         "§b tại vị trí §a" + loc.getWorld().getName() + " - " + 
+                         loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ());
+            }
+            
+            return islandId;
+        }
+        
+        if (Main.isDebugEnabled()) {
+            Main.sendlog("§c[OreGen4] BentoBox: Không tìm thấy đảo tại vị trí " + 
+                      loc.getWorld().getName() + " - " + 
+                      loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ());
         }
         return null;
     }

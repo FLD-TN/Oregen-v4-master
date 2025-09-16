@@ -1,13 +1,13 @@
 package me.sfclog.oregen4.command;
 
-import me.sfclog.oregen4.Main;
-import me.sfclog.oregen4.config.ConfigManager;
-import me.sfclog.oregen4.util.Color;
-import me.sfclog.oregen4.util.EnhancedPermissionCache;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
+
+import me.sfclog.oregen4.Main;
+import me.sfclog.oregen4.config.ConfigManager;
+import me.sfclog.oregen4.util.Color;
 
 /**
  * Lệnh chính của plugin OreGen4
@@ -37,15 +37,14 @@ public class OreGenCommand implements CommandExecutor {
         // Xử lý các lệnh phụ
         switch (args[0].toLowerCase()) {
             case "reload":
-                // Tải lại cấu hình
-                ConfigManager.loadConfig();
-                sender.sendMessage(Color.tran("&aĐã tải lại cấu hình từ file!"));
+                // Tải lại cấu hình và xóa tất cả cache
+                ConfigManager.reloadConfig();
+                sender.sendMessage(Color.tran("&aĐã tải lại cấu hình và xóa tất cả cache!"));
                 return true;
 
             case "clearcache":
                 // Xóa cache
-                EnhancedPermissionCache.clearAllCache();
-                me.sfclog.oregen4.util.IslandPermissionCache.clearAllCache();
+                ConfigManager.clearAllCaches();
                 sender.sendMessage(Color.tran("&aĐã xóa tất cả cache quyền và cache đảo!"));
                 return true;
 
@@ -94,7 +93,7 @@ public class OreGenCommand implements CommandExecutor {
      */
     private void showHelp(CommandSender sender) {
         sender.sendMessage(Color.tran("&8-----------------[ &bOreGen4 &8]-----------------"));
-        sender.sendMessage(Color.tran("&e/oregen reload &7- Tải lại cấu hình"));
+        sender.sendMessage(Color.tran("&e/oregen reload &7- Tải lại cấu hình và xóa tất cả cache"));
         sender.sendMessage(Color.tran("&e/oregen clearcache &7- Xóa tất cả cache"));
         sender.sendMessage(Color.tran("&e/oregen islandcache clear &7- Xóa cache đảo"));
         sender.sendMessage(Color.tran("&e/oregen debug &7- Bật/tắt chế độ debug"));

@@ -1,11 +1,8 @@
 package me.sfclog.oregen4.listener;
 
-import me.sfclog.oregen4.Main;
-import me.sfclog.oregen4.config.ConfigManager;
-import me.sfclog.oregen4.config.OreLevel;
-import me.sfclog.oregen4.util.EnhancedPermissionCache;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.user.User;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,8 +11,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import me.sfclog.oregen4.Main;
+import me.sfclog.oregen4.config.ConfigManager;
+import me.sfclog.oregen4.config.OreLevel;
+import me.sfclog.oregen4.util.EnhancedPermissionCache;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.model.user.User;
 
 /**
  * Listener để xử lý việc tải và cache quyền người chơi khi tham gia server
@@ -70,7 +71,11 @@ public class PlayerPermissionLoader implements Listener {
             }
 
             String playerName = user.getUsername();
-            Main.sendlog("§e[OreGen4] §2Đang preload quyền cho người chơi: §a" + playerName);
+            
+            // Chỉ hiển thị log debug khi thực sự cần thiết
+            if (Main.isDebugEnabled()) {
+                Main.sendlog("§e[OreGen4] §2Đang preload quyền cho người chơi: §a" + playerName);
+            }
 
             // Tải quyền cho tất cả các môi trường
             for (World.Environment env : World.Environment.values()) {
@@ -85,7 +90,9 @@ public class PlayerPermissionLoader implements Listener {
                         }
                     }
 
-                    Main.sendlog("§e[OreGen4] §2-- Môi trường: §a" + env.name());
+                    if (Main.isDebugEnabled()) {
+                        Main.sendlog("§e[OreGen4] §2-- Môi trường: §a" + env.name());
+                    }
 
                     // Kiểm tra quyền từ cao đến thấp - cập nhật để phù hợp với cấu hình mới
                     String[] levels = { "cap7", "cap6", "cap5", "cap4", "cap3", "cap2", "cap1", "vip", "level3",
@@ -96,10 +103,14 @@ public class PlayerPermissionLoader implements Listener {
                     for (String level : levels) {
                         String permission = "oregen." + level;
                         try {
-                            Main.sendlog("§e[OreGen4]  - Kiểm tra quyền: " + permission);
                             boolean hasPermission = user.getCachedData().getPermissionData().checkPermission(permission)
                                     .asBoolean();
-                            Main.sendlog("§e[OreGen4]  - Kết quả: " + (hasPermission ? "Có" : "Không"));
+                            
+                            // Chỉ log khi debug mode được bật
+                            if (Main.isDebugEnabled()) {
+                                Main.sendlog("§e[OreGen4]  - Kiểm tra quyền: " + permission);
+                                Main.sendlog("§e[OreGen4]  - Kết quả: " + (hasPermission ? "Có" : "Không"));
+                            }
 
                             if (hasPermission) {
                                 OreLevel oreLevel = ConfigManager.getLevel(env, permission);
@@ -108,15 +119,22 @@ public class PlayerPermissionLoader implements Listener {
                                     // Cache level ore với ưu tiên cao (TTL dài hơn)
                                     EnhancedPermissionCache.cachePermission(uuid, env, permission, oreLevel, true);
 
-                                    Main.sendlog("§a[OreGen4] Preloaded permission for " + user.getUsername() +
+                                    // Chỉ log khi debug mode được bật
+                                    if (Main.isDebugEnabled()) {
+                                        Main.sendlog("§a[OreGen4] Preloaded permission for " + user.getUsername() +
                                             " (" + uuid + "): " + permission + " in " + env);
+                                    }
 
                                     // Đã tìm thấy quyền cao nhất, không cần kiểm tra tiếp
                                     foundPermission = true;
                                     break;
                                 } else {
-                                    Main.sendlog(
+                                    // Chỉ log lỗi khi debug mode được bật
+                                    if (Main.isDebugEnabled()) {
+                                        Main.sendlog(
                                             "§c[OreGen4] Không tìm thấy cấu hình OreLevel cho quyền: " + permission);
+                                    }
+                                    
                                     // Thử kiểm tra lại với key rút gọn
                                     String shortKey = level;
                                     oreLevel = ConfigManager.getLevel(env, shortKey);
@@ -124,9 +142,12 @@ public class PlayerPermissionLoader implements Listener {
                                         // Cache level ore với ưu tiên cao (TTL dài hơn)
                                         EnhancedPermissionCache.cachePermission(uuid, env, permission, oreLevel, true);
 
-                                        Main.sendlog("§a[OreGen4] §2Đã cache thành công permission §a" + permission +
+                                        // Chỉ log khi debug mode được bật
+                                        if (Main.isDebugEnabled()) {
+                                            Main.sendlog("§a[OreGen4] §2Đã cache thành công permission §a" + permission +
                                                 "§2 (key=§a" + shortKey + "§2) cho người chơi §a" + playerName +
                                                 "§2 trong môi trường §a" + env.name());
+                                        }
 
                                         // Đã tìm thấy quyền cao nhất, không cần kiểm tra tiếp
                                         foundPermission = true;
@@ -140,14 +161,21 @@ public class PlayerPermissionLoader implements Listener {
                     }
 
                     if (!foundPermission) {
-                        Main.sendlog("§e[OreGen4] §cKhông tìm thấy quyền OreGen nào cho người chơi §a" + playerName +
+                        // Chỉ log khi debug mode được bật
+                        if (Main.isDebugEnabled()) {
+                            Main.sendlog("§e[OreGen4] §cKhông tìm thấy quyền OreGen nào cho người chơi §a" + playerName +
                                 "§c trong môi trường §a" + env.name() + "§c - sẽ sử dụng mức mặc định");
+                        }
 
                         // Cache mức mặc định
                         OreLevel defaultLevel = ConfigManager.getDefaultLevel(env);
                         if (defaultLevel != null) {
                             EnhancedPermissionCache.cachePermission(uuid, env, "oregen.default", defaultLevel, false);
-                            Main.sendlog("§e[OreGen4] §aĐã cache mức mặc định cho người chơi §6" + playerName);
+                            
+                            // Chỉ log khi debug mode được bật
+                            if (Main.isDebugEnabled()) {
+                                Main.sendlog("§e[OreGen4] §aĐã cache mức mặc định cho người chơi §6" + playerName);
+                            }
                         }
                     }
                 } catch (Exception e) {

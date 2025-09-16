@@ -1,15 +1,18 @@
 package me.sfclog.oregen4.api;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-
 import me.sfclog.oregen4.Main;
 import me.sfclog.oregen4.config.OreLevel;
 import me.sfclog.oregen4.config.OreLevelUtils;
 import me.sfclog.oregen4.island.IslandOreManager;
 import me.sfclog.oregen4.util.Color;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Public API for OreGen4
@@ -39,20 +42,25 @@ public class OreGenAPI {
     }
 
     /**
-     * Cập nhật cấp độ ore cho đảo của một người chơi
-     * Cùng một cấp độ sẽ áp dụng cho tất cả môi trường (normal, nether, end)
+     * Cập nhật cấp độ ore cho đảo dựa trên vị trí của người chơi
      * 
-     * @param player Người chơi (chủ đảo hoặc có quyền trên đảo)
+     * @param player Người chơi đang đứng trên đảo cần cập nhật
      * @param level  Cấp độ ore (0-7, trong đó 0 là mặc định)
+     * @param environment Môi trường (thế giới) để cập nhật, mặc định là NORMAL
      * @return True nếu thành công, false nếu không
      */
-    public boolean setOreLevel(Player player, int level) {
+    public boolean updateIslandOreLevel(Player player, int level, World.Environment environment) {
         if (player == null) {
             return false;
         }
 
         if (level < 0 || level > 7) {
             return false;
+        }
+
+        // Mặc định là thế giới thường
+        if (environment == null) {
+            environment = World.Environment.NORMAL;
         }
 
         try {
@@ -69,45 +77,44 @@ public class OreGenAPI {
                 OreLevel oreLevel = OreLevelUtils.getOreLevel(permission);
                 
                 if (oreLevel != null) {
-                    // Cập nhật cấp độ ore cho đảo trên tất cả môi trường
-                    IslandOreManager.setIslandOreLevel(islandId, World.Environment.NORMAL, oreLevel);
-
-                    //
-                    IslandOreManager.setIslandOreLevel(islandId, World.Environment.NETHER, oreLevel);
-                    IslandOreManager.setIslandOreLevel(islandId, World.Environment.THE_END, oreLevel);
+                    // Cập nhật cấp độ ore cho đảo
+                    IslandOreManager.setIslandOreLevel(islandId, environment, oreLevel);
                     return true;
                 }
             } else {
                 // Nếu level là 0, xóa cấp độ ore (reset về mặc định)
-                IslandOreManager.removeIsland(islandId);
+                Map<World.Environment, OreLevel> envMap = IslandOreManager.getIslandOreLevels(islandId);
+                if (envMap != null) {
+                    envMap.remove(environment);
+                    if (envMap.isEmpty()) {
+                        IslandOreManager.removeIsland(islandId);
+                    }
+                }
                 return true;
             }
         } catch (Exception e) {
             Bukkit.getLogger().warning(Color.tran("&c[OreGen4] Lỗi khi cập nhật cấp độ ore cho đảo: " + e.getMessage()));
-            e.printStackTrace();
+            return false;
         }
         
         return false;
     }
     
     /**
-     * @deprecated Sử dụng {@link #setOreLevel(Player, int)} thay thế
-     */
-    @Deprecated
-    public boolean setOreLevel(Player player, int level, World.Environment environment) {
-        // Chuyển tiếp đến phương thức mới, bỏ qua environment
-        return setOreLevel(player, level);
-    }
-    
-    /**
-     * Lấy cấp độ ore của đảo tại một vị trí
+     * Lấy cấp độ ore hiện tại của đảo
      * 
-     * @param location Vị trí bất kỳ trên đảo
-     * @return Cấp độ ore hiện tại (0-7), với 0 là mặc định (không nâng cấp)
+     * @param location Vị trí trên đảo
+     * @param environment Môi trường (thế giới) để kiểm tra, mặc định là NORMAL
+     * @return Cấp độ ore hiện tại, hoặc 0 nếu không tìm thấy
      */
-    public int getOreLevel(Location location) {
+    public int getIslandOreLevel(Location location, World.Environment environment) {
         if (location == null) {
             return 0;
+        }
+        
+        // Mặc định là thế giới thường
+        if (environment == null) {
+            environment = World.Environment.NORMAL;
         }
         
         try {
@@ -118,9 +125,8 @@ public class OreGenAPI {
                 return 0;
             }
             
-            // Lấy cấp độ ore của đảo (từ thế giới normal)
-            // Vì chúng ta đặt cùng một cấp độ cho mọi môi trường nên chỉ cần kiểm tra một môi trường
-            OreLevel oreLevel = IslandOreManager.getIslandOreLevel(islandId, World.Environment.NORMAL);
+            // Lấy cấp độ ore của đảo
+            OreLevel oreLevel = IslandOreManager.getIslandOreLevel(islandId, environment);
             
             if (oreLevel != null) {
                 String permission = oreLevel.getPermission();
@@ -134,25 +140,12 @@ public class OreGenAPI {
     }
     
     /**
-     * @deprecated Sử dụng {@link #getOreLevel(Location)} thay thế
-     */
-    @Deprecated
-    public int getOreLevel(Location location, World.Environment environment) {
-        // Chuyển tiếp đến phương thức mới, bỏ qua environment
-        return getOreLevel(location);
-    }
-    
-    /**
-     * Lấy ID của đảo từ vị trí trong thế giới
+     * Lấy ID của đảo từ vị trí
      * 
      * @param location Vị trí cần kiểm tra
-     * @return ID của đảo hoặc null nếu không tìm thấy đảo nào tại vị trí đó
+     * @return ID của đảo hoặc null nếu không tìm thấy
      */
-    public String getIslandIdFromLocation(Location location) {
-        if (location == null) {
-            return null;
-        }
-        
+    private String getIslandIdFromLocation(Location location) {
         // Thử lấy từ BentoBox hook
         if (Main.hookbentobox != null) {
             return Main.hookbentobox.getIslandIdAt(location);
@@ -167,27 +160,40 @@ public class OreGenAPI {
     }
     
     /**
-     * Phương thức cũ: Cập nhật quyền ore cho người chơi
-     * @deprecated Sử dụng {@link #setOreLevel(Player, int, World.Environment)} thay thế
+     * Xóa dữ liệu ore level của đảo
+     * 
+     * @param location Vị trí trên đảo
+     * @return True nếu thành công, false nếu không
      */
-    @Deprecated
-    public boolean updatePlayerPermission(Player player, String level) {
-        Bukkit.getLogger().warning(Color.tran("&c[OreGen4] Phương thức updatePlayerPermission đã lỗi thời. Sử dụng setOreLevel thay thế."));
+    public boolean resetIslandOreLevel(Location location) {
+        if (location == null) {
+            return false;
+        }
         
-        // Thử chuyển đổi từ phương thức cũ sang mới để đảm bảo tương thích ngược
         try {
-            if (level == null || player == null) {
+            // Lấy ID của đảo từ vị trí
+            String islandId = getIslandIdFromLocation(location);
+            
+            if (islandId == null) {
                 return false;
             }
             
-            int levelId = OreLevelUtils.getLevelIdFromPermission("oregen." + level.toLowerCase());
-            if (levelId >= 0) {
-                return setOreLevel(player, levelId);
-            }
+            // Xóa dữ liệu ore level của đảo
+            IslandOreManager.removeIsland(islandId);
+            return true;
         } catch (Exception e) {
-            Bukkit.getLogger().warning(Color.tran("&c[OreGen4] Lỗi khi chuyển đổi từ phương thức cũ: " + e.getMessage()));
+            Bukkit.getLogger().warning(Color.tran("&c[OreGen4] Lỗi khi xóa dữ liệu ore level của đảo: " + e.getMessage()));
+            return false;
         }
-        
+    }
+    
+    /**
+     * Phương thức cũ: Cập nhật quyền ore cho người chơi
+     * @deprecated Sử dụng {@link #updateIslandOreLevel(Player, int, World.Environment)} thay thế
+     */
+    @Deprecated
+    public boolean updatePlayerPermission(Player player, String level) {
+        Bukkit.getLogger().warning(Color.tran("&c[OreGen4] Phương thức updatePlayerPermission đã lỗi thời. Sử dụng updateIslandOreLevel thay thế."));
         return false;
     }
 }

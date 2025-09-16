@@ -1,13 +1,8 @@
 package me.sfclog.oregen4.command;
 
-import me.sfclog.oregen4.Main;
-import me.sfclog.oregen4.util.Color;
-import me.sfclog.oregen4.util.EnhancedPermissionCache;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,11 +10,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import me.sfclog.oregen4.Main;
+import me.sfclog.oregen4.config.OreLevel;
+import me.sfclog.oregen4.config.OreLevelUtils;
+import me.sfclog.oregen4.island.IslandOreManager;
+import me.sfclog.oregen4.util.Color;
 
 /**
- * Lệnh nâng cấp quyền sinh ore cho người chơi
+ * Lệnh nâng cấp quyền sinh ore cho đảo
  */
 public class UpgradeOreCommand implements CommandExecutor {
 
@@ -38,131 +36,193 @@ public class UpgradeOreCommand implements CommandExecutor {
         }
 
         // Kiểm tra số tham số
-        if (args.length != 2) {
-            sender.sendMessage(Color.tran("&cSử dụng: /upgradeore <tên người chơi> <cấp độ>"));
-            sender.sendMessage(Color.tran("&cVí dụ: /upgradeore Notch cap1"));
-            sender.sendMessage(Color.tran("&cCác cấp độ: default, cap1, cap2, cap3, cap4, cap5, cap6, cap7"));
+        if (args.length < 2) {
+            sender.sendMessage(Color.tran("&cSử dụng: /upgradeore <tên người chơi> <cấp độ> [world]"));
+            sender.sendMessage(Color.tran("&cVí dụ: /upgradeore Notch 5"));
+            sender.sendMessage(Color.tran("&cVí dụ: /upgradeore Notch cap5"));
+            sender.sendMessage(Color.tran("&cCác cấp độ: 0-7 hoặc cap1-cap7 (0 là mặc định)"));
             return true;
         }
 
         // Lấy tên người chơi và cấp độ
         final String playerName = args[0];
-        final String level = args[1].toLowerCase();
+        final int level;
+        
+        // Hỗ trợ cả định dạng số (1-7) và "cap1", "cap2", ...
+        String levelArg = args[1].toLowerCase();
+        if (levelArg.startsWith("cap")) {
+            try {
+                // Trích xuất số từ "cap{số}"
+                level = Integer.parseInt(levelArg.substring(3));
+                if (level < 0 || level > 7) {
+                    sender.sendMessage(Color.tran("&cCấp độ không hợp lệ! Các cấp độ từ 0-7"));
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                sender.sendMessage(Color.tran("&cĐịnh dạng cấp độ không hợp lệ! Sử dụng số 0-7 hoặc cap1, cap2, ..., cap7"));
+                return true;
+            }
+        } else {
+            try {
+                level = Integer.parseInt(levelArg);
+                if (level < 0 || level > 7) {
+                    sender.sendMessage(Color.tran("&cCấp độ không hợp lệ! Các cấp độ từ 0-7"));
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                sender.sendMessage(Color.tran("&cCấp độ phải là số từ 0-7 hoặc định dạng cap1, cap2, ..., cap7!"));
+                return true;
+            }
+        }
 
-        // Kiểm tra cấp độ hợp lệ
-        if (!isValidLevel(level)) {
-            sender.sendMessage(
-                    Color.tran("&cCấp độ không hợp lệ! Các cấp độ: default, cap1, cap2, cap3, cap4, cap5, cap6, cap7"));
-            return true;
+        // Xác định môi trường (world)
+        World.Environment environment = World.Environment.NORMAL; // Mặc định là thế giới thường
+        if (args.length >= 3) {
+            try {
+                environment = World.Environment.valueOf(args[2].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                sender.sendMessage(Color.tran("&cThế giới không hợp lệ! Sử dụng: NORMAL, NETHER, THE_END"));
+                return true;
+            }
         }
 
         // Tìm người chơi
-        final UUID targetUUID = findPlayerUUID(playerName);
-
-        // Nếu không tìm thấy người chơi
-        if (targetUUID == null) {
-            sender.sendMessage(
-                    Color.tran("&cNgười chơi &e" + playerName + " &ckhông tồn tại hoặc chưa từng tham gia server!"));
+        final Player targetPlayer = Bukkit.getPlayer(playerName);
+        if (targetPlayer == null) {
+            sender.sendMessage(Color.tran("&cNgười chơi &e" + playerName + " &ckhông online!"));
+            sender.sendMessage(Color.tran("&cNgười chơi phải online để xác định đảo của họ."));
             return true;
         }
 
-        // Lấy API LuckPerms
-        LuckPerms luckPermsApi = Main.getInstance().getLuckPermsApi();
-        if (luckPermsApi == null) {
-            sender.sendMessage(Color.tran("&cKhông thể kết nối với LuckPerms API!"));
+        // Xác định ID của đảo
+        String islandId = getIslandIdFromPlayer(targetPlayer);
+        if (islandId == null) {
+            sender.sendMessage(Color.tran("&cKhông thể xác định đảo của người chơi &e" + playerName + "&c!"));
+            sender.sendMessage(Color.tran("&cNgười chơi phải đứng trên đảo của họ."));
             return true;
+        }
+
+        if (level > 0) {
+            // Lấy OreLevel tương ứng với cấp độ
+            String permission;
+            OreLevel oreLevel;
+            
+            // Thử lấy theo định dạng "oregen.level.{số}"
+            permission = OreLevelUtils.getPermissionFromLevelId(level);
+            oreLevel = OreLevelUtils.getOreLevel(permission);
+            
+            // Nếu không tìm thấy, thử lấy theo định dạng "oregen.cap{số}"
+            if (oreLevel == null) {
+                permission = "oregen.cap" + level;
+                oreLevel = OreLevelUtils.getOreLevel(permission);
+            }
+            
+            if (oreLevel == null) {
+                sender.sendMessage(Color.tran("&cKhông tìm thấy cấu hình cho cấp độ &e" + level + "&c!"));
+                return true;
+            }
         }
 
         // Thông báo đang xử lý
-        sender.sendMessage(Color
-                .tran("&eDang nâng cấp quyền sinh quặng cho &b" + playerName + " &elên cấp độ &b" + level + "&e..."));
+        sender.sendMessage(Color.tran("&eDang nâng cấp ore cho đảo của &b" + playerName + 
+                " &elên cấp độ &b" + level + "&e trong thế giới &b" + environment.name() + "&e..."));
 
-        processPermissionUpdate(sender, playerName, level, targetUUID, luckPermsApi);
+        // Đặt cấp độ ore cho đảo
+        if (level > 0) {
+            // Thử lấy theo định dạng "oregen.level.{số}"
+            String permission = OreLevelUtils.getPermissionFromLevelId(level);
+            OreLevel oreLevel = OreLevelUtils.getOreLevel(permission);
+            
+            // Nếu không tìm thấy, thử lấy theo định dạng "oregen.cap{số}"
+            if (oreLevel == null) {
+                permission = "oregen.cap" + level;
+                oreLevel = OreLevelUtils.getOreLevel(permission);
+            }
+            
+            if (oreLevel != null) {
+                // Debug log trước khi đặt cấp độ ore
+                if (Main.isDebugEnabled()) {
+                    Main.sendlog("§e[UpgradeOreCmd] §bĐặt cấp độ ore §a" + permission + 
+                            "§b cho đảo §a" + islandId + "§b trong môi trường §a" + environment);
+                }
+                
+                IslandOreManager.setIslandOreLevel(islandId, environment, oreLevel);
+                
+                // Kiểm tra lại xem đã được lưu vào cache chưa
+                if (Main.isDebugEnabled()) {
+                    OreLevel checkLevel = IslandOreManager.getIslandOreLevel(islandId, environment);
+                    if (checkLevel != null) {
+                        Main.sendlog("§e[UpgradeOreCmd] §aXác nhận: Cấp độ ore đã được đặt thành §b" + 
+                                checkLevel.getPermission() + "§a cho đảo §b" + islandId);
+                    } else {
+                        Main.sendlog("§c[UpgradeOreCmd] LỖI: Không thể tìm thấy cấp độ ore sau khi đặt cho đảo §b" + islandId);
+                    }
+                }
+            } else {
+                sender.sendMessage(Color.tran("&cKhông tìm thấy cấu hình cho cấp độ &e" + level + "&c!"));
+                return true;
+            }
+        } else {
+            // Nếu level là 0, xóa ore level (reset về mặc định)
+            Map<World.Environment, OreLevel> envMap = IslandOreManager.getIslandOreLevels(islandId);
+            if (envMap != null) {
+                envMap.remove(environment);
+                if (envMap.isEmpty()) {
+                    IslandOreManager.removeIsland(islandId);
+                }
+            }
+        }
+
+        // Thông báo thành công
+        sender.sendMessage(Color.tran("&aNâng cấp ore cho đảo của &b" + playerName + 
+                " &alên cấp độ &b" + level + " &athành công!"));
+        
+        // Thông báo cho người chơi
+        targetPlayer.sendMessage(Color.tran("&aOre của đảo bạn đã được nâng cấp lên cấp độ &b" + level + "&a!"));
 
         return true;
     }
 
     /**
-     * Tìm UUID của người chơi từ tên
+     * Lấy ID của đảo từ người chơi
      */
-    private UUID findPlayerUUID(String playerName) {
-        // Kiểm tra người chơi online trước
-        Player onlinePlayer = Bukkit.getPlayer(playerName);
-        if (onlinePlayer != null) {
-            return onlinePlayer.getUniqueId();
-        }
-
-        // Nếu không online, tìm trong danh sách người chơi đã từng tham gia
-        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-            if (offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(playerName)) {
-                return offlinePlayer.getUniqueId();
+    private String getIslandIdFromPlayer(Player player) {
+        String islandId = null;
+        
+        // Thử lấy từ BentoBox hook
+        if (Main.hookbentobox != null) {
+            islandId = Main.hookbentobox.getIslandIdAt(player.getLocation());
+            if (islandId != null) {
+                if (Main.isDebugEnabled()) {
+                    Main.sendlog("§e[OreGen4] §aBentoBox: Đã tìm thấy đảo ID §b" + islandId + "§a cho người chơi §b" + player.getName());
+                }
+                return islandId;
+            } else if (Main.isDebugEnabled()) {
+                Main.sendlog("§c[OreGen4] BentoBox: Không tìm thấy đảo cho người chơi " + player.getName());
             }
         }
-
+        
+        // Thử lấy từ SuperiorSkyblock hook
+        if (Main.hooksuper != null) {
+            islandId = Main.hooksuper.getIslandID(player.getLocation());
+            if (islandId != null) {
+                if (Main.isDebugEnabled()) {
+                    Main.sendlog("§e[OreGen4] §aSuperiorSkyblock: Đã tìm thấy đảo ID §b" + islandId + "§a cho người chơi §b" + player.getName());
+                }
+                return islandId;
+            } else if (Main.isDebugEnabled()) {
+                Main.sendlog("§c[OreGen4] SuperiorSkyblock: Không tìm thấy đảo cho người chơi " + player.getName());
+            }
+        }
+        
+        // Nếu không tìm thấy đảo
+        if (Main.isDebugEnabled()) {
+            Main.sendlog("§c[OreGen4] Không tìm thấy đảo cho người chơi " + player.getName());
+            Main.sendlog("§c[OreGen4] World: " + player.getWorld().getName());
+            Main.sendlog("§c[OreGen4] Location: " + player.getLocation().getX() + ", " + 
+                      player.getLocation().getY() + ", " + player.getLocation().getZ());
+        }
+        
         return null;
-    }
-
-    /**
-     * Xử lý cập nhật quyền
-     */
-    private void processPermissionUpdate(CommandSender sender, String playerName, String level, UUID targetUUID,
-            LuckPerms luckPermsApi) {
-        // Xử lý bất đồng bộ để không chặn thread chính
-        CompletableFuture.runAsync(() -> {
-            try {
-                // Tải user từ LuckPerms
-                User user = luckPermsApi.getUserManager().loadUser(targetUUID).join();
-                if (user == null) {
-                    Bukkit.getScheduler().runTask(plugin,
-                            () -> sender.sendMessage(Color.tran("&cKhông thể tải thông tin người chơi từ LuckPerms!")));
-                    return;
-                }
-
-                // Xóa tất cả quyền ore.* cũ
-                for (String oldLevel : new String[] { "default", "cap1", "cap2", "cap3", "cap4", "cap5", "cap6",
-                        "cap7" }) {
-                    user.data().remove(Node.builder("oregen." + oldLevel).build());
-                }
-
-                // Thêm quyền mới nếu không phải default
-                // Với default, chỉ cần xóa tất cả quyền khác
-                if (!level.equals("default")) {
-                    user.data().add(Node.builder("oregen." + level).build());
-                }
-
-                // Lưu user
-                luckPermsApi.getUserManager().saveUser(user).join();
-
-                // Xóa cache cũ
-                for (World.Environment env : World.Environment.values()) {
-                    EnhancedPermissionCache.removeCachedPermissions(targetUUID, env);
-                }
-
-                // Thông báo thành công
-                final String finalLevel = level;
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    sender.sendMessage(Color.tran("&aNâng cấp quyền sinh quặng cho &b" + playerName + " &alên cấp độ &b"
-                            + finalLevel + " &athành công!"));
-
-                    // Thông báo cho người chơi nếu đang online
-                    Player targetPlayer = Bukkit.getPlayer(targetUUID);
-                    if (targetPlayer != null && targetPlayer.isOnline()) {
-                        targetPlayer.sendMessage(Color.tran(
-                                "&aQuyền sinh quặng của bạn đã được nâng cấp lên cấp độ &b" + finalLevel + "&a!"));
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Bukkit.getScheduler().runTask(plugin,
-                        () -> sender.sendMessage(Color.tran("&cLỗi khi nâng cấp quyền: " + e.getMessage())));
-            }
-        });
-    }
-
-    /**
-     * Kiểm tra cấp độ có hợp lệ không
-     */
-    private boolean isValidLevel(String level) {
-        return level.matches("cap[1-7]") || level.equals("default");
     }
 }

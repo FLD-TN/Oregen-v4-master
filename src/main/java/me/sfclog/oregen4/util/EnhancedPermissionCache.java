@@ -1,15 +1,15 @@
 package me.sfclog.oregen4.util;
 
-import me.sfclog.oregen4.Main;
-import me.sfclog.oregen4.config.ConfigManager;
-import me.sfclog.oregen4.config.OreLevel;
-import org.bukkit.World;
-import org.bukkit.scheduler.BukkitTask;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.World;
+import org.bukkit.scheduler.BukkitTask;
+
+import me.sfclog.oregen4.Main;
+import me.sfclog.oregen4.config.OreLevel;
 
 /**
  * Cache thông tin quyền và OreLevel cho người chơi
@@ -102,7 +102,7 @@ public class EnhancedPermissionCache {
         cleanupTask = Main.pl.getServer().getScheduler().runTaskTimerAsynchronously(
                 Main.pl, EnhancedPermissionCache::cleanupCache, CLEANUP_INTERVAL / 50, CLEANUP_INTERVAL / 50);
 
-        Main.sendlog("§a[OreGen4] Khởi tạo EnhancedPermissionCache thành công");
+        if (Main.isDebugEnabled()) Main.sendlog("§a[OreGen4] §2Khởi tạo EnhancedPermissionCache thành công");
     }
 
     /**
@@ -135,11 +135,10 @@ public class EnhancedPermissionCache {
             }
 
             // Hiển thị thống kê cache
-            boolean debug = Main.pl.getConfig().getBoolean("debug", false);
-            if ((cleaned > 0 || debug) && Main.pl != null) {
-                Main.sendlog("§a[OreGen4] Cache Stats: Cleaned=" + cleaned +
-                        ", Remaining=" + remaining +
-                        ", Hit Rate=" + getCacheHitRate() + "%");
+            if ((cleaned > 0 && Main.isDebugEnabled()) && Main.pl != null) {
+                Main.sendlog("§a[OreGen4] §2Cache Stats: §aCleared=§2" + cleaned +
+                        "§a, Remaining=§2" + remaining +
+                        "§a, Hit Rate=§2" + getCacheHitRate() + "%");
 
                 // Reset thống kê
                 if (cacheHits + cacheMisses > 10000) {
@@ -148,7 +147,7 @@ public class EnhancedPermissionCache {
                 }
             }
         } catch (Exception e) {
-            Main.sendlog("§c[OreGen4] Lỗi khi dọn dẹp cache: " + e.getMessage());
+            Main.sendlog("§c[OreGen4] §4Lỗi khi dọn dẹp cache: §c" + e.getMessage());
         }
     }
 
@@ -188,7 +187,7 @@ public class EnhancedPermissionCache {
                 playerCache.put(env, new CachedPermissionData(permission, oreLevel, isPriority));
             }
         } catch (Exception e) {
-            Main.sendlog("§c[OreGen4] Lỗi khi cache quyền: " + e.getMessage());
+            Main.sendlog("§c[OreGen4] §4Lỗi khi cache quyền: §c" + e.getMessage());
         }
     }
 
@@ -340,7 +339,7 @@ public class EnhancedPermissionCache {
         if (playerCache != null) {
             playerCache.remove(environment);
             if (Main.getInstance().getConfig().getBoolean("debug", false)) {
-                Main.sendlog("§e[OreGen4] Đã xóa cache quyền cho " + uuid + " trong môi trường " + environment.name());
+                if (Main.isDebugEnabled()) Main.sendlog("§e[OreGen4] §bĐã xóa cache quyền cho §a" + uuid + "§b trong môi trường §a" + environment.name());
             }
         }
     }
@@ -353,7 +352,7 @@ public class EnhancedPermissionCache {
     public static void removeCachedPermissions(UUID uuid) {
         cache.remove(uuid);
         if (Main.getInstance().getConfig().getBoolean("debug", false)) {
-            Main.sendlog("§e[OreGen4] Đã xóa tất cả cache quyền cho " + uuid);
+            if (Main.isDebugEnabled()) Main.sendlog("§e[OreGen4] §bĐã xóa tất cả cache quyền cho §a" + uuid);
         }
     }
 

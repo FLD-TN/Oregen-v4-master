@@ -2,16 +2,17 @@ package me.sfclog.oregen4;
 
 import java.util.UUID;
 
-import me.sfclog.oregen4.hook.SuperiorSkyblockHook;
-import me.sfclog.oregen4.oregen.EventOreGen;
-import me.sfclog.oregen4.config.ConfigManager;
-import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import me.sfclog.oregen4.config.ConfigManager;
 import me.sfclog.oregen4.hook.BentoBoxHook;
+import me.sfclog.oregen4.hook.SuperiorSkyblockHook;
+import me.sfclog.oregen4.oregen.EventOreGen;
+import net.luckperms.api.LuckPerms;
 
 public class Main extends JavaPlugin {
 
@@ -43,30 +44,30 @@ public class Main extends JavaPlugin {
 
 		// Lưu file config.yml mặc định nếu chưa tồn tại
 		saveDefaultConfig();
-		sendlog("§aĐã tạo file config.yml mặc định!");
+		sendlog("§a[OreGen4] §2Đã tạo file config.yml mặc định!");
 
 		// Sử dụng ConfigManager thay vì các phương thức đã deprecated
 		ConfigManager.loadConfig();
-		sendlog("§aĐã tải cấu hình từ config.yml!");
+		sendlog("§a[OreGen4] §2Đã tải cấu hình từ config.yml!");
 
 		// Kết nối với LuckPerms API
 		RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 		if (provider != null) {
 			luckapi = provider.getProvider();
-			sendlog("§2Kết nối thành công với LuckPerms API!");
+			sendlog("§2[OreGen4] §aKết nối thành công với LuckPerms API!");
 		} else {
-			sendlog("§cKhông thể kết nối với LuckPerms API. Một số chức năng sẽ bị vô hiệu hóa!");
+			sendlog("§c[OreGen4] §4Không thể kết nối với LuckPerms API. §cMột số chức năng sẽ bị vô hiệu hóa!");
 		}
 
 		// Khởi tạo hooks với các plugin SkyBlock
 		if (Bukkit.getPluginManager().getPlugin("BentoBox") != null) {
 			hookbentobox = new BentoBoxHook();
-			sendlog("§2Hook BentoBox !");
+			sendlog("§2[OreGen4] §aHook BentoBox thành công!");
 		} else if (Bukkit.getPluginManager().getPlugin("SuperiorSkyblock2") != null) {
-			sendlog("§2Hook SuperiorSkyblock2 !");
+			sendlog("§2[OreGen4] §aHook SuperiorSkyblock2 thành công!");
 			hooksuper = new SuperiorSkyblockHook();
 		} else {
-			sendlog("§2Enable Vanilla Mode !");
+			sendlog("§2[OreGen4] §aEnable Vanilla Mode!");
 		}
 
 		// Đăng ký sự kiện sinh quặng
@@ -77,7 +78,7 @@ public class Main extends JavaPlugin {
 		getCommand("upgradeore").setExecutor(new me.sfclog.oregen4.command.UpgradeOreCommand(this));
 		getCommand("permission").setExecutor(new me.sfclog.oregen4.updater.PermissionCommand(this));
 		getCommand("orestats").setExecutor(new me.sfclog.oregen4.command.StatsCommand(this));
-		sendlog("§aĐã đăng ký tất cả các lệnh!");
+		sendlog("§a[OreGen4] §2Đã đăng ký tất cả các lệnh!");
 
 		// Khởi tạo hệ thống cache nâng cao nếu LuckPerms có sẵn
 		if (luckapi != null) {
@@ -88,7 +89,7 @@ public class Main extends JavaPlugin {
 					new me.sfclog.oregen4.listener.PlayerPermissionLoader(luckapi), this);
 			Bukkit.getPluginManager().registerEvents(
 					new me.sfclog.oregen4.listener.IslandPermissionTracker(luckapi), this);
-			sendlog("§aĐã đăng ký các listener quyền để tối ưu hóa hiệu suất!");
+			sendlog("§a[OreGen4] §2Đã đăng ký các listener quyền để tối ưu hóa hiệu suất!");
 		}
 
 		// Khởi tạo hệ thống cache vị trí
@@ -96,7 +97,29 @@ public class Main extends JavaPlugin {
 
 		// Khởi tạo hệ thống cache theo đảo
 		me.sfclog.oregen4.util.IslandPermissionCache.initialize();
-		sendlog("§aĐã khởi tạo hệ thống cache theo đảo!");
+		sendlog("§a[OreGen4] §2Đã khởi tạo hệ thống cache theo đảo!");
+		
+		// Khởi tạo hệ thống quản lý ore theo đảo
+		me.sfclog.oregen4.island.IslandOreManager.init();
+		sendlog("§a[OreGen4] §2Đã khởi tạo hệ thống quản lý ore theo đảo!");
+		
+		// Đăng ký listener cho sự kiện xóa đảo
+		me.sfclog.oregen4.listener.IslandDisbandListener islandListener = new me.sfclog.oregen4.listener.IslandDisbandListener();
+		Bukkit.getPluginManager().registerEvents(islandListener, this);
+		
+		// Log thông tin về việc đăng ký listener
+		sendlog("§a[OreGen4] §2Đã đăng ký listener xử lý sự kiện xóa đảo!");
+		sendlog("§a[OreGen4] §2Đã đăng ký listener xử lý sự kiện xóa đảo!");
+		
+		// Khởi tạo API
+		me.sfclog.oregen4.api.OreGenAPI api = new me.sfclog.oregen4.api.OreGenAPI();
+		sendlog("§a[OreGen4] §2Đã khởi tạo OreGenAPI!");
+		
+		// Đăng ký placeholder nếu PlaceholderAPI có sẵn
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new me.sfclog.oregen4.placeholders.OreGenPlaceholders(this).register();
+			sendlog("§a[OreGen4] §2Đã đăng ký placeholders cho PlaceholderAPI!");
+		}
 	}
 
 	public static UUID get_hook(Location location) {
@@ -115,12 +138,16 @@ public class Main extends JavaPlugin {
 		me.sfclog.oregen4.util.EnhancedPermissionCache.shutdown();
 		me.sfclog.oregen4.util.IslandPermissionCache.shutdown();
 		me.sfclog.oregen4.util.LocationOwnerCache.shutdown();
+		
+		// Đóng hệ thống quản lý ore theo đảo
+		me.sfclog.oregen4.island.IslandOreManager.shutdown();
 
-		sendlog("§aĐã tắt tất cả các hệ thống cache!");
+		sendlog("§a[OreGen4] §2Đã tắt tất cả các hệ thống cache và lưu dữ liệu!");
 	}
 
 	public static void sendlog(String string) {
 		Bukkit.getConsoleSender().sendMessage(string);
 	}
+	
 
 }

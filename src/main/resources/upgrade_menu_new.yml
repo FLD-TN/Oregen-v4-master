@@ -1,0 +1,602 @@
+menu_title: "&8Nâng cấp khoáng sản"
+register_command: true
+open_command:
+  - oreupgrade
+open_commands:
+  - "[SOUND] BLOCK_CHEST_OPEN 2.0 0.5"
+size: 9
+items:
+  # --- Ô HIỂN THỊ THÔNG TIN HIỆN TẠI ---
+  "current_level_7":
+    material: ENCHANTED_BOOK
+    slot: 0
+    priority: 1
+    display_name: "&d&lCấp Độ Hiện Tại: 7 (Tối Đa)"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f1%"
+      - " &7Cobblestone: &f1%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f3%"
+      - " &fIron block: &f5%"
+      - " &eGold: &f3%"
+      - " &eGold block: &f5%"
+      - " &bDiamond: &f15%"
+      - " &bDiamond block: &f15%"
+      - " &aEmerald: &f14%"
+      - " &aEmerald block: &f14%"
+      - ""
+      - "&aĐảo của bạn đã đạt cấp độ nâng cấp cao nhất!"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 7"
+  "current_level_6":
+    material: ENCHANTED_BOOK
+    slot: 0
+    priority: 2
+    display_name: "&a&lCấp Độ Hiện Tại: 6"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f1%"
+      - " &7Cobblestone: &f1%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f5%"
+      - " &fIron block: &f10%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f10%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f10%"
+      - " &aEmerald block: &f14%"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 6"
+  "current_level_5":
+    material: ENCHANTED_BOOK
+    slot: 0
+    priority: 3
+    display_name: "&b&lCấp Độ Hiện Tại: 5"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f3%"
+      - " &7Cobblestone: &f1%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f10%"
+      - " &fIron block: &f10%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f10%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f7%"
+      - " &aEmerald block: &f10%"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 5"
+  "current_level_4":
+    material: ENCHANTED_BOOK
+    slot: 0
+    priority: 4
+    display_name: "&e&lCấp Độ Hiện Tại: 4"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f5%"
+      - " &7Cobblestone: &f2%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f10%"
+      - " &fIron block: &f10%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f7%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f7%"
+      - " &aEmerald block: &f10%"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 4"
+  "current_level_3":
+    material: ENCHANTED_BOOK
+    slot: 0
+    priority: 5
+    display_name: "&6&lCấp Độ Hiện Tại: 3"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f10%"
+      - " &7Cobblestone: &f5%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f7%"
+      - " &cRedstone: &f4%"
+      - " &cRedstone block: &f7%"
+      - " &9Lapis: &f4%"
+      - " &9Lapis block: &f7%"
+      - " &fIron: &f10%"
+      - " &fIron block: &f5%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f5%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f5%"
+      - " &aEmerald block: &f3%"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 3"
+  "current_level_2":
+    material: ENCHANTED_BOOK
+    slot: 0
+    priority: 6
+    display_name: "&7&lCấp Độ Hiện Tại: 2"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f20%"
+      - " &7Cobblestone: &f10%"
+      - " &7Coal: &f5%"
+      - " &7Coal block: &f10%"
+      - " &cRedstone: &f5%"
+      - " &cRedstone block: &f10%"
+      - " &9Lapis: &f5%"
+      - " &9Lapis block: &f10%"
+      - " &fIron: &f7%"
+      - " &fIron block: &f5%"
+      - " &eGold: &f2%"
+      - " &eGold block: &f3%"
+      - " &bDiamond: &f3%"
+      - " &bDiamond block: &f5%"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 2"
+  "current_level_1":
+    material: ENCHANTED_BOOK
+    slot: 0
+    priority: 7
+    display_name: "&8&lCấp Độ Hiện Tại: 1"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f25%"
+      - " &7Cobblestone: &f15%"
+      - " &7Coal: &f25%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f7%"
+      - " &cRedstone block: &f3%"
+      - " &9Lapis: &f7%"
+      - " &9Lapis block: &f3%"
+      - " &fIron: &f5%"
+      - " &fIron block: &f3%"
+      - " &eGold: &f2%"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 1"
+  "current_level_default":
+    material: BOOK
+    slot: 0
+    priority: 8
+    display_name: "&f&lCấp Độ Hiện Tại: Mặc Định"
+    lore:
+      - "&f&lTỷ lệ khoáng sản của đảo:"
+      - " &7Stone: &f40%"
+      - " &7Cobblestone: &f25%"
+      - " &7Coal: &f15%"
+      - " &cRedstone: &f7%"
+      - " &9Lapis: &f10%"
+      - " &fIron: &f3%"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 0"
+
+  # --- CÁC NÚT NÂNG CẤP ---
+  "lv1":
+    material: COAL_ORE
+    slot: 4
+    display_name: "&8&lNâng cấp Ore &7- Lên Cấp 1"
+    priority: 10
+    lore:
+      - "&f&lTỷ lệ nhận được:"
+      - " &7Stone: &f25%"
+      - " &7Cobblestone: &f15%"
+      - " &7Coal: &f25%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f7%"
+      - " &cRedstone block: &f3%"
+      - " &9Lapis: &f7%"
+      - " &9Lapis block: &f3%"
+      - " &fIron: &f5%"
+      - " &fIron block: &f3%"
+      - " &eGold: &f2%"
+      - ""
+      - "&e&lGiá: &680,000⛀"
+      - ""
+      - "&a&l➤ &aNhấp để nâng cấp"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 0"
+    click_requirement:
+      requirements:
+        has_money:
+          type: javascript
+          expression: "%vault_eco_balance% >= 80000"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ tiền hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    click_commands:
+      - "[console] eco take %player_name% 80000"
+      - "[console] upgradeore %player_name% 1"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp 1!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+
+  "lv2":
+    material: IRON_ORE
+    slot: 4
+    display_name: "&7&lNâng cấp Ore &7- Lên Cấp 2"
+    priority: 9
+    lore:
+      - "&f&lTỷ lệ nhận được:"
+      - " &7Stone: &f20%"
+      - " &7Cobblestone: &f10%"
+      - " &7Coal: &f5%"
+      - " &7Coal block: &f10%"
+      - " &cRedstone: &f5%"
+      - " &cRedstone block: &f10%"
+      - " &9Lapis: &f5%"
+      - " &9Lapis block: &f10%"
+      - " &fIron: &f7%"
+      - " &fIron block: &f5%"
+      - " &eGold: &f2%"
+      - " &eGold block: &f3%"
+      - " &bDiamond: &f3%"
+      - " &bDiamond block: &f5%"
+      - ""
+      - "&e&lGiá: &6250,000⛀"
+      - ""
+      - "&a&l➤ &aNhấp để nâng cấp"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 1"
+    click_requirement:
+      requirements:
+        has_money:
+          type: javascript
+          expression: "%vault_eco_balance% >= 250000"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ tiền hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    click_commands:
+      - "[console] eco take %player_name% 250000"
+      - "[console] upgradeore %player_name% 2"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp 2!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+
+  "lv3":
+    material: GOLD_ORE
+    slot: 4
+    display_name: "&6&lNâng cấp Ore &7- Lên Cấp 3"
+    priority: 8
+    lore:
+      - "&f&lTỷ lệ nhận được:"
+      - " &7Stone: &f10%"
+      - " &7Cobblestone: &f5%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f7%"
+      - " &cRedstone: &f4%"
+      - " &cRedstone block: &f7%"
+      - " &9Lapis: &f4%"
+      - " &9Lapis block: &f7%"
+      - " &fIron: &f10%"
+      - " &fIron block: &f5%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f5%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f5%"
+      - " &aEmerald block: &f3%"
+      - ""
+      - "&e&lGiá: &61,000,000⛀"
+      - ""
+      - "&a&l➤ &aNhấp để nâng cấp"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 2"
+    click_requirement:
+      requirements:
+        has_money:
+          type: javascript
+          expression: "%vault_eco_balance% >= 1000000"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ tiền hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    click_commands:
+      - "[console] eco take %player_name% 1000000"
+      - "[console] upgradeore %player_name% 3"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp 3!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+
+  "lv4":
+    material: GOLD_BLOCK
+    slot: 4
+    display_name: "&e&lNâng cấp Ore &7- Lên Cấp 4"
+    priority: 7
+    lore:
+      - "&f&lTỷ lệ nhận được:"
+      - " &7Stone: &f5%"
+      - " &7Cobblestone: &f2%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f10%"
+      - " &fIron block: &f10%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f7%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f7%"
+      - " &aEmerald block: &f10%"
+      - ""
+      - "&e&lGiá: &62,500,000⛀"
+      - ""
+      - "&a&l➤ &aNhấp để nâng cấp"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 3"
+    click_requirement:
+      requirements:
+        has_money:
+          type: javascript
+          expression: "%vault_eco_balance% >= 2500000"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ tiền hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    click_commands:
+      - "[console] eco take %player_name% 2500000"
+      - "[console] upgradeore %player_name% 4"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp 4!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+
+  "lv5":
+    material: DIAMOND_ORE
+    slot: 4
+    display_name: "&b&lNâng cấp Ore &7- Lên Cấp 5"
+    priority: 6
+    lore:
+      - "&f&lTỷ lệ nhận được:"
+      - " &7Stone: &f3%"
+      - " &7Cobblestone: &f1%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f10%"
+      - " &fIron block: &f10%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f10%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f7%"
+      - " &aEmerald block: &f10%"
+      - ""
+      - "&e&lGiá: &62,500,000⛀"
+      - ""
+      - "&a&l➤ &aNhấp để nâng cấp"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 4"
+    click_requirement:
+      requirements:
+        has_money:
+          type: javascript
+          expression: "%vault_eco_balance% >= 2500000"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ tiền hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    click_commands:
+      - "[console] eco take %player_name% 2500000"
+      - "[console] upgradeore %player_name% 5"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp 5!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+
+  "lv6":
+    material: EMERALD_ORE
+    slot: 4
+    display_name: "&a&lNâng cấp Ore &7- Lên Cấp 6"
+    priority: 5
+    lore:
+      - "&f&lTỷ lệ nhận được:"
+      - " &7Stone: &f1%"
+      - " &7Cobblestone: &f1%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f5%"
+      - " &fIron block: &f10%"
+      - " &eGold: &f5%"
+      - " &eGold block: &f10%"
+      - " &bDiamond: &f10%"
+      - " &bDiamond block: &f10%"
+      - " &aEmerald: &f10%"
+      - " &aEmerald block: &f14%"
+      - ""
+      - "&e&lGiá: &610,000,000⛀"
+      - ""
+      - "&a&l➤ &aNhấp để nâng cấp"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 5"
+    click_requirement:
+      requirements:
+        has_money:
+          type: javascript
+          expression: "%vault_eco_balance% >= 10000000"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ tiền hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    click_commands:
+      - "[console] eco take %player_name% 10000000"
+      - "[console] upgradeore %player_name% 6"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp 6!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+
+  "lv7":
+    material: NETHERITE_INGOT
+    slot: 4
+    display_name: "&d&lNâng cấp Ore &7- Lên Cấp 7 (Tối Đa)"
+    priority: 4
+    lore:
+      - "&f&lTỷ lệ nhận được:"
+      - " &7Stone: &f1%"
+      - " &7Cobblestone: &f1%"
+      - " &7Coal: &f3%"
+      - " &7Coal block: &f5%"
+      - " &cRedstone: &f3%"
+      - " &cRedstone block: &f5%"
+      - " &9Lapis: &f3%"
+      - " &9Lapis block: &f5%"
+      - " &fIron: &f3%"
+      - " &fIron block: &f5%"
+      - " &eGold: &f3%"
+      - " &eGold block: &f5%"
+      - " &bDiamond: &f15%"
+      - " &bDiamond block: &f15%"
+      - " &aEmerald: &f14%"
+      - " &aEmerald block: &f14%"
+      - ""
+      - "&d&lYêu cầu: &e100⛃ &fhoặc &d5000🔒"
+      - ""
+      - "&e&l➤ &eNhấn chuột trái để nâng cấp bằng xu"
+      - "&d&l➤ &dNhấn chuột phải để nâng cấp bằng xu khóa"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 6"
+    left_click_requirement:
+      requirements:
+        has_points:
+          type: javascript
+          expression: "%playerpoints_points% >= 100"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ xu hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    left_click_commands:
+      - "[console] points take %player_name% 100"
+      - "[console] upgradeore %player_name% 7"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp Tối Đa!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+    right_click_requirement:
+      requirements:
+        has_xukhoa:
+          type: javascript
+          expression: "%customcurrency_amount_xukhoa% >= 5000"
+        is_owner:
+          type: string equals
+          input: "%superior_island_is_leader%"
+          output: "Có"
+      deny_commands:
+        - "[message] &c&lLỗi! &7Bạn không đủ xu khóa hoặc không phải chủ đảo!"
+        - "[sound] ENTITY_VILLAGER_NO 1.0 1.0"
+    right_click_commands:
+      - "[console] customcurrency remove %player_name% xukhoa 5000"
+      - "[console] upgradeore %player_name% 7"
+      - "[message] &a&lThành công! &7Bạn đã nâng cấp ore lên Cấp Tối Đa bằng xu khóa!"
+      - "[sound] ENTITY_PLAYER_LEVELUP 1.0 1.0"
+      - "[refresh]"
+
+  "max_level_display":
+    material: NETHERITE_BLOCK
+    slot: 4
+    display_name: "&d&lNâng cấp Ore &7- Cấp Tối Đa"
+    priority: 3
+    lore:
+      - "&aĐảo của bạn đã nâng cấp generator lên cấp độ cao nhất."
+      - "&aChúc bạn farm vui vẻ!"
+    view_requirement:
+      requirements:
+        level:
+          type: javascript
+          expression: "%oregen_island_level% == 7"

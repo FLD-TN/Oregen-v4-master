@@ -1,15 +1,89 @@
 package me.sfclog.oregen4.config;
 
-import me.sfclog.oregen4.Main;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.HashMap;
-import java.util.Map;
+import me.sfclog.oregen4.Main;
+import me.sfclog.oregen4.island.IslandOreManager;
+import me.sfclog.oregen4.util.EnhancedPermissionCache;
+import me.sfclog.oregen4.util.IslandPermissionCache;
+import me.sfclog.oregen4.util.LocationOwnerCache;
+import me.sfclog.oregen4.util.PermissionCache;
 
 public class ConfigManager {
     private static final Map<World.Environment, Map<String, OreLevel>> levels = new HashMap<>();
     private static final Map<World.Environment, OreLevel> defaultLevels = new HashMap<>();
+
+    /**
+     * Phương thức cải tiến để tải lại cấu hình
+     * Đảm bảo xóa tất cả các cache và tải lại cấu hình từ đĩa
+     */
+    public static void reloadConfig() {
+        // Đọc lại file config.yml từ ổ đĩa
+        Main.pl.reloadConfig();
+        
+        if (Main.isDebugEnabled()) {
+            Main.sendlog("§a[OreGen4] §2Đã đọc lại file config.yml từ ổ đĩa");
+        }
+        
+        // Xóa tất cả các cache hiện có
+        clearAllCaches();
+        
+        // Tải lại cấu hình
+        loadConfig();
+        
+        if (Main.isDebugEnabled()) {
+            Main.sendlog("§a[OreGen4] §2Đã tải lại cấu hình thành công!");
+        }
+    }
+    
+    /**
+     * Xóa tất cả các cache được sử dụng trong plugin
+     */
+    public static void clearAllCaches() {
+        // Bảo vệ dữ liệu đảo hiện tại bằng cách tạo bản sao trước
+        Map<String, Map<World.Environment, OreLevel>> islandDataBackup = null;
+        
+        try {
+            // Lưu trữ dữ liệu đảo hiện tại
+            islandDataBackup = IslandOreManager.getIslandOreDataCopy();
+            IslandOreManager.saveData();
+            Main.sendlog("§a[OreGen4] §2Đã lưu dữ liệu đảo trước khi xóa cache");
+        } catch (Exception e) {
+            Main.sendlog("§c[OreGen4] §4Lỗi khi lưu dữ liệu đảo: " + e.getMessage());
+        }
+        
+        // Xóa cache trong ConfigManager
+        levels.clear();
+        defaultLevels.clear();
+        
+        // Xóa cache quyền người chơi
+        EnhancedPermissionCache.clearAllCache();
+        PermissionCache.clearAllCache();
+        
+        // Xóa cache đảo
+        IslandPermissionCache.clearAllCache();
+        
+        // Xóa cache vị trí
+        LocationOwnerCache.clearAllCache();
+        
+        // Tải lại IslandOreManager (nếu cần)
+        IslandOreManager.loadData();
+        
+        // Kiểm tra nếu không có dữ liệu nào được tải, khôi phục từ bản sao
+        if (IslandOreManager.getIslandCount() == 0 && islandDataBackup != null && !islandDataBackup.isEmpty()) {
+            Main.sendlog("§e[OreGen4] §6Không tìm thấy dữ liệu đảo từ file, đang khôi phục từ bản sao...");
+            IslandOreManager.restoreFromBackup(islandDataBackup);
+            IslandOreManager.saveData(); // Lưu lại dữ liệu đã khôi phục
+        }
+        
+        if (Main.isDebugEnabled()) {
+            Main.sendlog("§a[OreGen4] §2Đã xóa tất cả cache!");
+        }
+    }
 
     public static void loadConfig() {
         // Clear existing data
@@ -119,43 +193,52 @@ public class ConfigManager {
     }
 
     public static OreLevel getLevel(World.Environment env, String permission) {
-        Main.sendlog("§e[OreGen4] Tìm level cho permission " + permission + " trong môi trường " + env);
-
+        // Chỉ log khi debug mode được bật và permission không phải cái đã xử lý gần đây
+        boolean shouldLog = Main.isDebugEnabled();
+        
         // Xử lý tên quyền để khớp với cấu trúc trong config
         // Ví dụ: "oregen.cap5" sẽ thành "cap5"
         String permKey = permission;
         if (permission.startsWith("oregen.")) {
             permKey = permission.substring("oregen.".length());
         }
-
-        Main.sendlog("§e[OreGen4] Đã chuyển đổi permission " + permission + " thành key " + permKey);
+        
+        if (shouldLog) {
+            Main.sendlog("§e[OreGen4] §bTìm level cho permission §a" + permission + "§b trong môi trường §a" + env);
+            Main.sendlog("§e[OreGen4] §bĐã chuyển đổi permission §a" + permission + "§b thành key §a" + permKey);
+        }
 
         Map<String, OreLevel> envLevels = levels.get(env);
         if (envLevels != null) {
-            Main.sendlog("§e[OreGen4] Có " + envLevels.size() + " level đã được tải trong môi trường " + env);
+            // Chỉ log khi debug mode được bật
+            if (shouldLog && false) { // Tắt log này, quá nhiều
+                Main.sendlog("§e[OreGen4] §bCó §a" + envLevels.size() + "§b level đã được tải trong môi trường §a" + env);
 
-            // Liệt kê tất cả các level đã tải
-            Main.sendlog("§e[OreGen4] Danh sách các level có sẵn:");
-            for (Map.Entry<String, OreLevel> entry : envLevels.entrySet()) {
-                Main.sendlog("§e[OreGen4]  - Level " + entry.getKey() + " với permission "
-                        + entry.getValue().getPermission());
+                // Liệt kê tất cả các level đã tải - tắt để giảm spam
+                /*
+                Main.sendlog("§e[OreGen4] §bDanh sách các level có sẵn:");
+                for (Map.Entry<String, OreLevel> entry : envLevels.entrySet()) {
+                    Main.sendlog("§e[OreGen4] §b - Level §a" + entry.getKey() + "§b với permission §a"
+                            + entry.getValue().getPermission());
+                }
+                */
             }
 
             // Phương pháp 1: Tìm kiếm theo key trực tiếp (cách nhanh nhất)
             OreLevel directLevel = envLevels.get(permKey);
             if (directLevel != null) {
-                Main.sendlog("§e[OreGen4] Tìm thấy level trực tiếp với key " + permKey +
-                        " trong môi trường " + env);
+                if (shouldLog) Main.sendlog("§e[OreGen4] §aTìm thấy level trực tiếp với key §2" + permKey +
+                        "§a trong môi trường §2" + env);
                 return directLevel;
             } else {
-                Main.sendlog("§e[OreGen4] Không tìm thấy level trực tiếp với key " + permKey);
+                if (shouldLog) Main.sendlog("§e[OreGen4] §cKhông tìm thấy level trực tiếp với key §a" + permKey);
             }
 
             // Phương pháp 2: Tìm kiếm theo permission đầy đủ
             for (OreLevel level : envLevels.values()) {
                 if (level.getPermission().equals(permission)) {
-                    Main.sendlog("§e[OreGen4] Tìm thấy level theo permission đầy đủ " + permission +
-                            " trong môi trường " + env);
+                    if (shouldLog) Main.sendlog("§e[OreGen4] §aTìm thấy level theo permission đầy đủ §2" + permission +
+                            "§a trong môi trường §2" + env);
                     return level;
                 }
             }
@@ -168,11 +251,12 @@ public class ConfigManager {
                     levelKey = levelPerm.substring("oregen.".length());
                 }
 
-                Main.sendlog("§e[OreGen4] §bSo sánh key §a" + permKey + "§b với §a" + levelKey);
+                // Quá nhiều log, vô hiệu hóa kể cả khi debug mode bật
+                // if (shouldLog) Main.sendlog("§e[OreGen4] §bSo sánh key §a" + permKey + "§b với §a" + levelKey);
 
                 if (permKey.equals(levelKey)) {
-                    Main.sendlog("§a[OreGen4] Tìm thấy level theo key rút gọn " + permKey +
-                            " trong môi trường " + env);
+                    if (shouldLog) Main.sendlog("§a[OreGen4] §aTìm thấy level theo key rút gọn §2" + permKey +
+                            "§a trong môi trường §2" + env);
                     return level;
                 }
             }
@@ -181,17 +265,17 @@ public class ConfigManager {
             for (Map.Entry<String, OreLevel> entry : envLevels.entrySet()) {
                 String configKey = entry.getKey();
                 if (configKey.equals(permKey) || permKey.equals(configKey)) {
-                    Main.sendlog("§a[OreGen4] Tìm thấy level thông qua khớp phần: " + configKey +
-                            " trong môi trường " + env);
+                    if (shouldLog) Main.sendlog("§a[OreGen4] §aTìm thấy level thông qua khớp phần: §2" + configKey +
+                            "§a trong môi trường §2" + env);
                     return entry.getValue();
                 }
             }
         } else {
-            Main.sendlog("§c[OreGen4] CẢNH BÁO: Không có level nào được tải cho môi trường " + env);
+            if (shouldLog) Main.sendlog("§c[OreGen4] §4CẢNH BÁO: Không có level nào được tải cho môi trường §a" + env);
         }
 
-        Main.sendlog("§c[OreGen4] Không tìm thấy level nào cho permission " + permission +
-                " trong môi trường " + env + " sau khi thử tất cả các phương pháp");
+        if (shouldLog) Main.sendlog("§c[OreGen4] §4Không tìm thấy level nào cho permission §a" + permission +
+                "§4 trong môi trường §a" + env + "§4 sau khi thử tất cả các phương pháp");
         return null;
     }
 
