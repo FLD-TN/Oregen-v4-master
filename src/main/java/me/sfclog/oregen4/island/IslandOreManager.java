@@ -76,7 +76,7 @@ public class IslandOreManager {
         if (dataFile != null && dataFile.exists()) {
             try {
                 dataConfig = YamlConfiguration.loadConfiguration(dataFile);
-                plugin.getLogger().log(Level.INFO, "Đã đọc lại file island_ore_data.yml từ đĩa.");
+                plugin.getLogger().log(Level.INFO, "Đã đọc lại file island_ore_data.yml");
             } catch (Exception e) {
                 plugin.getLogger().log(Level.SEVERE, "Lỗi khi đọc file island_ore_data.yml: {0}", e.getMessage());
                 if (cacheCopy != null) {
